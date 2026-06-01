@@ -409,7 +409,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
 <!-- ===== STATS BAR ===== -->
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-num">1</div><div class="stat-lbl">Court</div></div>
-  <div class="stat-item"><div class="stat-num">FREE</div><div class="stat-lbl">Jun 7 Launch</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-launch-num">₱150</div><div class="stat-lbl" id="stat-launch-lbl">Starting / hr</div></div>
   <div class="stat-item"><div class="stat-num">12hrs</div><div class="stat-lbl">Daily Operations</div></div>
   <div class="stat-item"><div class="stat-num">💡</div><div class="stat-lbl">Night Lights</div></div>
 </div>
@@ -439,14 +439,14 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
     <div class="section-hdr center">
       <div class="section-tag">Pricing</div>
       <h2 class="section-title">Simple, Honest Rates</h2>
-      <p class="section-sub">🎉 <strong>June 7 Soft Launch — FREE entrance!</strong> Book your slot and come play on us.</p>
+      <p class="section-sub" id="pricing-sub">Book the full court by the hour. Bring your crew — the court is all yours.</p>
     </div>
     <div class="price-grid">
       <div class="price-card">
         <div class="price-shift">1st Shift</div>
         <div class="price-name">Morning Session</div>
         <div class="price-time">🌅 5:00 AM – 9:00 AM</div>
-        <div class="price-rate">FREE <sub>June 7 only</sub></div>
+        <div class="price-rate" id="price-rate-m">₱150 <sub>/ hour</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
           <div class="perk">Free parking</div>
@@ -459,7 +459,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <div class="price-shift">2nd Shift</div>
         <div class="price-name">Afternoon & Night</div>
         <div class="price-time">🌆 4:00 PM – 12:00 MN</div>
-        <div class="price-rate">FREE <sub>June 7 only</sub></div>
+        <div class="price-rate" id="price-rate-a">₱180 <sub>/ hour</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
           <div class="perk">Free parking</div>
@@ -571,11 +571,11 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <button class="slot-close-btn" onclick="closeSlots()">✕ Close</button>
       </div>
       <div class="shift-block">
-        <div class="shift-block-lbl">🌅 1st Shift · Morning — FREE</div>
+        <div class="shift-block-lbl" id="shift-lbl-m">🌅 1st Shift · Morning — ₱150/hr</div>
         <div class="slot-grid" id="slots-morning"></div>
       </div>
       <div class="shift-block">
-        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night — FREE</div>
+        <div class="shift-block-lbl" id="shift-lbl-a">🌆 2nd Shift · Afternoon & Night — ₱180/hr</div>
         <div class="slot-grid" id="slots-afternoon"></div>
       </div>
     </div>
@@ -844,7 +844,7 @@ function renderAdmBookings(){
   if(!rows.length){document.getElementById('adm-bookings-tbody').innerHTML='<tr><td colspan="8" class="tbl-empty">No bookings found.</td></tr>';return;}
   document.getElementById('adm-bookings-tbody').innerHTML=rows.map(function(r){
     var isMorn=r.shift&&r.shift.includes('1st');
-    var total=(isMorn?150:180)*(r.duration||1);
+    var total=(isMorn?RATE_M:RATE_A)*(r.duration||1);
     return '<tr>'
       +'<td style="white-space:nowrap">'+esc(r.date||'—')+'</td>'
       +'<td><strong>'+esc(r.name||'—')+'</strong></td>'
@@ -878,7 +878,7 @@ function updateAdmStats(){
   document.getElementById('stat-pending').textContent=bookingsData.filter(function(b){return b.status==='Pending';}).length;
   document.getElementById('stat-confirmed').textContent=bookingsData.filter(function(b){return b.status==='Confirmed';}).length;
   var rev=bookingsData.filter(function(b){return b.status!=='Cancelled';}).reduce(function(s,b){
-    return s+((b.shift&&b.shift.includes('1st')?150:180)*(b.duration||1));
+    return s+((b.shift&&b.shift.includes('1st')?RATE_M:RATE_A)*(b.duration||1));
   },0);
   document.getElementById('stat-revenue').textContent='₱'+rev.toLocaleString();
 }
@@ -890,7 +890,7 @@ function renderAnalytics(){
     var m=b.shift&&b.shift.includes('1st');
     if(m)byShift.m++;else byShift.a++;
     byStatus[b.status]=(byStatus[b.status]||0)+1;
-    if(b.status!=='Cancelled'){var r=(m?150:180)*(b.duration||1);if(m)rev.m+=r;else rev.a+=r;}
+    if(b.status!=='Cancelled'){var r=(m?RATE_M:RATE_A)*(b.duration||1);if(m)rev.m+=r;else rev.a+=r;}
   });
   document.getElementById('ana-content').innerHTML=
     '<div class="ana-grid">'
@@ -911,6 +911,24 @@ function renderAnalytics(){
 }
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ── Soft Launch Pricing (Jun 7–9 free, Jun 10+ paid) ── */
+var _ld=new Date();
+var isSoftLaunch=_ld>=new Date('2026-06-07')&&_ld<new Date('2026-06-10');
+var RATE_M=isSoftLaunch?0:150;
+var RATE_A=isSoftLaunch?0:180;
+function initPricing(){
+  if(isSoftLaunch){
+    document.getElementById('stat-launch-num').textContent='FREE';
+    document.getElementById('stat-launch-lbl').textContent='Jun 7–9 Launch';
+    document.getElementById('pricing-sub').innerHTML='🎉 <strong>June 7–9 Soft Launch — FREE entrance!</strong> Book your slot and come play on us.';
+    document.getElementById('price-rate-m').innerHTML='FREE <sub>Jun 7–9 only</sub>';
+    document.getElementById('price-rate-a').innerHTML='FREE <sub>Jun 7–9 only</sub>';
+    document.getElementById('shift-lbl-m').textContent='🌅 1st Shift · Morning — FREE';
+    document.getElementById('shift-lbl-a').textContent='🌆 2nd Shift · Afternoon & Night — FREE';
+  }
+}
+document.addEventListener('DOMContentLoaded',initPricing);
 
 /* ── Helpers ── */
 function gotoSection(id){ var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'}); }
@@ -1042,7 +1060,7 @@ function fmtHr(h){
 function selectSlot(ds,shift,timeStr){
   selectedSlot={date:ds,shift:shift,time:timeStr};
   var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-  var shiftLbl=shift==='morning'?'1st Shift (FREE – Jun 7)':'2nd Shift (FREE – Jun 7)';
+  var shiftLbl=shift==='morning'?'1st Shift ('+(RATE_M?'₱'+RATE_M+'/hr':'FREE')+')':'2nd Shift ('+(RATE_A?'₱'+RATE_A+'/hr':'FREE')+')';
   document.getElementById('slot-banner-info').textContent='📅 '+DAY_SHORT[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+' · '+timeStr+' · '+shiftLbl;
   var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
   var durEl=document.getElementById('bk-dur');
