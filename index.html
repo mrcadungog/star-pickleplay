@@ -921,11 +921,12 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 /* ── Soft Launch Pricing (Jun 7–9 free, Jun 10+ paid) ── */
 var _ld=new Date();
 var isSoftLaunch=_ld>=new Date('2026-06-07')&&_ld<new Date('2026-06-10');
+var showBanner=_ld<new Date('2026-06-10');
 var RATE_M=isSoftLaunch?0:150;
 var RATE_A=isSoftLaunch?0:180;
 function initPricing(){
+  if(showBanner){document.getElementById('promo-launch-banner').style.display='block';}
   if(isSoftLaunch){
-    document.getElementById('promo-launch-banner').style.display='block';
     document.getElementById('hero-opening').textContent='🎉 Soft Launch — June 7, 8 & 9';
     document.getElementById('hero-btn-primary').textContent='🎉 Book Free Slot';
     document.getElementById('hero-btn-secondary').textContent='It\'s FREE!';
