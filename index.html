@@ -358,9 +358,9 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
 <div id="v-website">
 
 <!-- ===== PROMO BANNER ===== -->
-<div id="promo-launch-banner" style="display:none;background:linear-gradient(90deg,#15803D,#166534);color:#fff;text-align:center;padding:11px 48px;font-size:.88rem;font-weight:600;position:relative;letter-spacing:.2px;">
+<div id="promo-launch-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:910;background:linear-gradient(90deg,#15803D,#166534);color:#fff;text-align:center;padding:11px 48px;font-size:.88rem;font-weight:600;letter-spacing:.2px;">
   🎉 Soft Launch: <strong>June 7, 8 &amp; 9 — FREE Entrance!</strong> Come play on us — no charge, just fun.
-  <button onclick="document.getElementById('promo-launch-banner').style.display='none'" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer;line-height:1;padding:0">✕</button>
+  <button onclick="document.getElementById('promo-launch-banner').style.display='none';document.getElementById('main-nav').style.top='0';" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer;line-height:1;padding:0">✕</button>
 </div>
 
 <!-- ===== NAV ===== -->
@@ -925,7 +925,11 @@ var showBanner=_ld<new Date('2026-06-10');
 var RATE_M=isSoftLaunch?0:150;
 var RATE_A=isSoftLaunch?0:180;
 function initPricing(){
-  if(showBanner){document.getElementById('promo-launch-banner').style.display='block';}
+  if(showBanner){
+    var banner=document.getElementById('promo-launch-banner');
+    banner.style.display='block';
+    requestAnimationFrame(function(){document.getElementById('main-nav').style.top=banner.offsetHeight+'px';});
+  }
   if(isSoftLaunch){
     document.getElementById('hero-opening').textContent='🎉 Soft Launch — June 7, 8 & 9';
     document.getElementById('hero-btn-primary').textContent='🎉 Book Free Slot';
@@ -976,6 +980,8 @@ function loadConfirmedBookings(){
 function renderCalendar(){
   document.getElementById('cal-month-lbl').textContent=MONTH_NAMES[calMonth]+' '+calYear;
   var today=new Date(); today.setHours(0,0,0,0);
+  var openDate=new Date('2026-06-07'); openDate.setHours(0,0,0,0);
+  var minDate=today<openDate?openDate:today;
   var firstDay=new Date(calYear,calMonth,1).getDay();
   var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
 
@@ -994,7 +1000,7 @@ function renderCalendar(){
   for(var day=1;day<=daysInMonth;day++){
     var dt=new Date(calYear,calMonth,day); dt.setHours(0,0,0,0);
     var ds=calYear+'-'+pad2(calMonth+1)+'-'+pad2(day);
-    var past=dt<today, isToday=dt.getTime()===today.getTime();
+    var past=dt<minDate, isToday=dt.getTime()===today.getTime()&&!past;
     var used=dayMap[day]||0, full=used>=12, hasBk=used>0;
     var cls='cal-day'+(past?' cal-past':'')+(isToday?' cal-today':'')+(hasBk&&!full?' cal-has':'')+(full?' cal-has cal-full':'');
     var click=!past?'onclick="selectCalDay(\''+ds+'\')"':'';
