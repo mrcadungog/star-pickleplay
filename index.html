@@ -357,6 +357,12 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
 <body>
 <div id="v-website">
 
+<!-- ===== PROMO BANNER ===== -->
+<div id="promo-launch-banner" style="display:none;background:linear-gradient(90deg,#15803D,#166534);color:#fff;text-align:center;padding:11px 48px;font-size:.88rem;font-weight:600;position:relative;letter-spacing:.2px;">
+  🎉 Soft Launch: <strong>June 7, 8 &amp; 9 — FREE Entrance!</strong> Come play on us — no charge, just fun.
+  <button onclick="document.getElementById('promo-launch-banner').style.display='none'" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer;line-height:1;padding:0">✕</button>
+</div>
+
 <!-- ===== NAV ===== -->
 <nav id="main-nav">
   <a href="#hero" class="nav-logo">
@@ -395,13 +401,13 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
       </svg>
     </div>
-    <div class="hero-opening">🏓 Opening — June 7, 2026</div>
+    <div class="hero-opening" id="hero-opening">🏓 Opening — June 7, 2026</div>
     <h1 class="hero-title">STAR <em>PicklePlay Court</em></h1>
     <p class="hero-tagline">Serve · Rally · Win</p>
     <p class="hero-loc">📍 <strong>CRP, Casay</strong>, Dalaguete, Cebu</p>
     <div class="hero-btns">
-      <button class="btn-gold" onclick="gotoSection('book')">🏓 Book a Slot</button>
-      <button class="btn-ghost" onclick="gotoSection('pricing')">View Pricing</button>
+      <button class="btn-gold" id="hero-btn-primary" onclick="gotoSection('book')">🏓 Book a Slot</button>
+      <button class="btn-ghost" id="hero-btn-secondary" onclick="gotoSection('pricing')">View Pricing</button>
     </div>
   </div>
 </section>
@@ -919,6 +925,10 @@ var RATE_M=isSoftLaunch?0:150;
 var RATE_A=isSoftLaunch?0:180;
 function initPricing(){
   if(isSoftLaunch){
+    document.getElementById('promo-launch-banner').style.display='block';
+    document.getElementById('hero-opening').textContent='🎉 Soft Launch — June 7, 8 & 9';
+    document.getElementById('hero-btn-primary').textContent='🎉 Book Free Slot';
+    document.getElementById('hero-btn-secondary').textContent='It\'s FREE!';
     document.getElementById('stat-launch-num').textContent='FREE';
     document.getElementById('stat-launch-lbl').textContent='Jun 7–9 Launch';
     document.getElementById('pricing-sub').innerHTML='🎉 <strong>June 7–9 Soft Launch — FREE entrance!</strong> Book your slot and come play on us.';
