@@ -576,7 +576,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <div class="slot-date-lbl" id="slot-date-lbl"></div>
         <button class="slot-close-btn" onclick="closeSlots()">✕ Close</button>
       </div>
-      <div class="shift-block">
+      <div class="shift-block" id="shift-block-m">
         <div class="shift-block-lbl" id="shift-lbl-m">🌅 1st Shift · Morning — ₱150/hr</div>
         <div class="slot-grid" id="slots-morning"></div>
       </div>
@@ -597,7 +597,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <div class="fg"><label>Contact Number *</label><input type="tel" id="bk-phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/\D/g,'')"></div>
       </div>
       <div class="frow">
-        <div class="fg"><label>Duration *</label>
+        <div class="fg"><label id="dur-label">Duration *</label>
           <select id="bk-dur"><option value="">Select…</option></select>
         </div>
         <div class="fg"><label>Number of Players *</label>
@@ -936,6 +936,7 @@ function initPricing(){
     document.getElementById('price-rate-a').innerHTML='FREE <sub>Jun 7–9 only</sub>';
     document.getElementById('shift-lbl-m').textContent='🌅 1st Shift · Morning — FREE';
     document.getElementById('shift-lbl-a').textContent='🌆 2nd Shift · Afternoon & Night — FREE';
+    document.getElementById('dur-label').textContent='Duration * (1 hr max — Soft Launch)';
   }
 }
 document.addEventListener('DOMContentLoaded',initPricing);
@@ -1031,6 +1032,8 @@ function renderSlots(ds){
   });
   var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
   document.getElementById('slot-date-lbl').textContent=DAY_FULL[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  var isSLDate=['2026-06-07','2026-06-08','2026-06-09'].indexOf(ds)!==-1;
+  document.getElementById('shift-block-m').style.display=isSLDate?'none':'';
   document.getElementById('slots-morning').innerHTML=buildSlotGrid([5,6,7,8],blocked,ds,'morning');
   document.getElementById('slots-afternoon').innerHTML=buildSlotGrid([16,17,18,19,20,21,22,23],blocked,ds,'afternoon');
   document.getElementById('slot-section').style.display='block';
@@ -1075,7 +1078,8 @@ function selectSlot(ds,shift,timeStr){
   var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
   var durEl=document.getElementById('bk-dur');
   durEl.innerHTML='<option value="">Select…</option>';
-  for(var i=1;i<=maxHrs;i++) durEl.innerHTML+='<option value="'+i+'">'+i+' hour'+(i>1?'s':'')+'</option>';
+  var maxAllowed=isSoftLaunch?1:maxHrs;
+  for(var i=1;i<=maxAllowed;i++) durEl.innerHTML+='<option value="'+i+'">'+i+' hour'+(i>1?'s':'')+'</option>';
   document.getElementById('bk-success').style.display='none';
   document.getElementById('btn-book').style.display='';
   document.getElementById('btn-book').textContent='🏓 Submit Reservation';
