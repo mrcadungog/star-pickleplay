@@ -1124,19 +1124,35 @@ function submitBooking(){
   if(phone.length<10){showToast('Please enter a valid phone number.','error');return;}
   var btn=document.getElementById('btn-book');
   btn.textContent='Submitting…';btn.disabled=true;
-  var data={
-    name:name,phone:phone,date:selectedSlot.date,
-    shift:selectedSlot.shift==='morning'?'1st Shift (5AM–9AM)':'2nd Shift (4PM–12MN)',
-    startTime:selectedSlot.time,duration:parseInt(dur),
-    players:players,notes:notes,
-    status:'Pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  };
-  if(db){
-    db.collection('bookings').add(data).then(function(){
-      sendNotify('pickleplay','booking',data);
-      onBookingSuccess();
-    }).catch(function(e){showToast('Error: '+e.message,'error');btn.textContent='🏓 Submit Reservation';btn.disabled=false;});
-  } else {onBookingSuccess();}
+  var SL_DATES=['2026-06-07','2026-06-08','2026-06-09'];
+  var isSLDate=SL_DATES.indexOf(selectedSlot.date)!==-1;
+  var finalDur=isSLDate?1:parseInt(dur);
+  function doSubmit(){
+    var data={
+      name:name,phone:phone,date:selectedSlot.date,
+      shift:selectedSlot.shift==='morning'?'1st Shift (5AM–9AM)':'2nd Shift (4PM–12MN)',
+      startTime:selectedSlot.time,duration:finalDur,
+      players:players,notes:notes,
+      status:'Pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if(db){
+      db.collection('bookings').add(data).then(function(){
+        sendNotify('pickleplay','booking',data);
+        onBookingSuccess();
+      }).catch(function(e){showToast('Error: '+e.message,'error');btn.textContent='🏓 Submit Reservation';btn.disabled=false;});
+    } else {onBookingSuccess();}
+  }
+  if(isSLDate&&db){
+    db.collection('bookings').where('phone','==',phone).where('date','in',SL_DATES).get()
+      .then(function(snap){
+        if(!snap.empty){
+          showToast('You already have a soft launch booking. See you on the court! 🏓','error');
+          btn.textContent='🏓 Submit Reservation';btn.disabled=false;
+          return;
+        }
+        doSubmit();
+      }).catch(function(){doSubmit();});
+  } else {doSubmit();}
 }
 
 function onBookingSuccess(){
