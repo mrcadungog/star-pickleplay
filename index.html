@@ -409,7 +409,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
 <!-- ===== STATS BAR ===== -->
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-num">1</div><div class="stat-lbl">Court</div></div>
-  <div class="stat-item"><div class="stat-num">₱150</div><div class="stat-lbl">Starting / hr</div></div>
+  <div class="stat-item"><div class="stat-num">FREE</div><div class="stat-lbl">Jun 7 Launch</div></div>
   <div class="stat-item"><div class="stat-num">12hrs</div><div class="stat-lbl">Daily Operations</div></div>
   <div class="stat-item"><div class="stat-num">💡</div><div class="stat-lbl">Night Lights</div></div>
 </div>
@@ -439,14 +439,14 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
     <div class="section-hdr center">
       <div class="section-tag">Pricing</div>
       <h2 class="section-title">Simple, Honest Rates</h2>
-      <p class="section-sub">Book the full court by the hour. Bring your crew — the court is all yours.</p>
+      <p class="section-sub">🎉 <strong>June 7 Soft Launch — FREE entrance!</strong> Book your slot and come play on us.</p>
     </div>
     <div class="price-grid">
       <div class="price-card">
         <div class="price-shift">1st Shift</div>
         <div class="price-name">Morning Session</div>
         <div class="price-time">🌅 5:00 AM – 9:00 AM</div>
-        <div class="price-rate">₱150 <sub>/ hour</sub></div>
+        <div class="price-rate">FREE <sub>June 7 only</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
           <div class="perk">Free parking</div>
@@ -459,7 +459,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <div class="price-shift">2nd Shift</div>
         <div class="price-name">Afternoon & Night</div>
         <div class="price-time">🌆 4:00 PM – 12:00 MN</div>
-        <div class="price-rate">₱180 <sub>/ hour</sub></div>
+        <div class="price-rate">FREE <sub>June 7 only</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
           <div class="perk">Free parking</div>
@@ -571,11 +571,11 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <button class="slot-close-btn" onclick="closeSlots()">✕ Close</button>
       </div>
       <div class="shift-block">
-        <div class="shift-block-lbl">🌅 1st Shift · Morning — ₱150/hr</div>
+        <div class="shift-block-lbl">🌅 1st Shift · Morning — FREE</div>
         <div class="slot-grid" id="slots-morning"></div>
       </div>
       <div class="shift-block">
-        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night — ₱180/hr</div>
+        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night — FREE</div>
         <div class="slot-grid" id="slots-afternoon"></div>
       </div>
     </div>
@@ -1042,7 +1042,7 @@ function fmtHr(h){
 function selectSlot(ds,shift,timeStr){
   selectedSlot={date:ds,shift:shift,time:timeStr};
   var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-  var shiftLbl=shift==='morning'?'1st Shift (₱150/hr)':'2nd Shift (₱180/hr)';
+  var shiftLbl=shift==='morning'?'1st Shift (FREE – Jun 7)':'2nd Shift (FREE – Jun 7)';
   document.getElementById('slot-banner-info').textContent='📅 '+DAY_SHORT[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+' · '+timeStr+' · '+shiftLbl;
   var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
   var durEl=document.getElementById('bk-dur');
