@@ -1,0 +1,1135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Star PicklePlay Court — Casay, Dalaguete, Cebu</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1A6B3C;--gd:#0A3D20;--gl:#2D9E5E;
+  --gold:#F59E0B;--goldd:#D97706;--goldl:#FEF3C7;
+  --g50:#F9FBF9;--g100:#F0F4F1;--g200:#E2E8E4;
+  --g500:#64748B;--g700:#334155;--g900:#0F172A;
+  --fn:'Poppins',sans-serif;
+  --sh:0 4px 24px rgba(10,61,32,.12);
+  --shl:0 8px 40px rgba(10,61,32,.2);
+  --r:16px
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--fn);color:var(--g900);background:#fff;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:var(--fn);border:none;outline:none}
+input,select,textarea{font-family:var(--fn)}
+
+/* ── NAV ── */
+#main-nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(26,107,60,.1);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(10,61,32,.07)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-txt{font-size:1.05rem;font-weight:800;color:var(--gd);letter-spacing:-.2px;line-height:1.2}
+.nav-logo-txt em{color:var(--gold);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:22px}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--g700);transition:color .2s}
+.nav-links a:hover{color:var(--green)}
+.nav-cta{background:var(--green);color:#fff!important;padding:8px 20px;border-radius:50px;font-weight:600!important;transition:all .2s!important}
+.nav-cta:hover{background:var(--gd)!important;transform:translateY(-1px)}
+.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-ham span{display:block;width:24px;height:2px;background:var(--gd);border-radius:2px}
+
+/* ── HERO ── */
+#hero{min-height:100vh;background:linear-gradient(145deg,var(--gd) 0%,#0F5C2E 45%,#1A6B3C 75%,#2D9E5E 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:100px 40px 70px;text-align:center}
+.hero-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
+.hero-orb{position:absolute;border-radius:50%;background:rgba(245,158,11,.07);animation:orbFloat linear infinite}
+@keyframes orbFloat{0%{transform:translateY(110vh) scale(.3);opacity:0}15%{opacity:1}85%{opacity:.3}100%{transform:translateY(-150px) scale(1.2);opacity:0}}
+.hero-content{position:relative;z-index:1;max-width:660px}
+.hero-svg-wrap{margin:0 auto 24px;animation:starPulse 3s ease-in-out infinite}
+@keyframes starPulse{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.03)}}
+.hero-opening{display:inline-block;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.45);color:#FDE68A;padding:5px 18px;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px}
+.hero-title{font-size:3.4rem;font-weight:900;color:#fff;line-height:1.05;margin-bottom:10px;letter-spacing:-1.5px}
+.hero-title em{color:var(--gold);font-style:normal;display:block}
+.hero-tagline{font-size:1.15rem;color:rgba(255,255,255,.75);margin-bottom:8px;font-weight:300;letter-spacing:2px}
+.hero-loc{font-size:.875rem;color:rgba(255,255,255,.55);margin-bottom:36px}
+.hero-loc strong{color:var(--gold)}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-gold{background:var(--gold);color:var(--gd);padding:14px 32px;border-radius:50px;font-size:1rem;font-weight:800;transition:all .25s;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(245,158,11,.4)}
+.btn-gold:hover{background:#fff;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2)}
+.btn-ghost{background:transparent;color:#fff;padding:13px 30px;border-radius:50px;font-size:.95rem;font-weight:600;border:2px solid rgba(255,255,255,.4);transition:all .25s;cursor:pointer}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.8)}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--gd);padding:22px 40px;display:flex;justify-content:center;gap:56px;flex-wrap:wrap}
+.stat-item{text-align:center;color:#fff}
+.stat-num{font-size:1.9rem;font-weight:900;color:var(--gold);line-height:1}
+.stat-lbl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.5);margin-top:3px}
+
+/* ── SECTIONS ── */
+section{padding:80px 40px}
+.section-tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--green);margin-bottom:10px}
+.section-title{font-size:2rem;font-weight:800;color:var(--g900);margin-bottom:14px;line-height:1.2}
+.section-sub{font-size:.975rem;color:var(--g500);line-height:1.75;max-width:540px}
+.section-hdr{margin-bottom:48px}
+.center{text-align:center}.center .section-sub{margin:0 auto}
+
+/* ── ABOUT ── */
+#about{background:var(--g50)}
+.about-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.about-visual{background:linear-gradient(135deg,var(--gd),var(--green));border-radius:24px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;box-shadow:var(--shl);font-size:6rem}
+.about-cards{display:flex;flex-direction:column;gap:14px;margin-top:24px}
+.ac{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1px solid var(--g200);border-radius:12px;padding:16px 18px;transition:all .25s}
+.ac:hover{border-color:var(--green);box-shadow:var(--sh)}
+.ac-icon{font-size:1.6rem;flex-shrink:0;line-height:1}
+.ac strong{display:block;font-size:.88rem;font-weight:700;color:var(--g900)}
+.ac span{font-size:.8rem;color:var(--g500)}
+
+/* ── PRICING ── */
+#pricing{background:#fff}
+.pricing-wrap{max-width:860px;margin:0 auto}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.price-card{border-radius:20px;border:2px solid var(--g200);padding:32px 28px;transition:all .3s;position:relative;overflow:hidden;background:#fff}
+.price-card:hover{border-color:var(--green);box-shadow:var(--shl);transform:translateY(-5px)}
+.price-card.featured{border-color:var(--green);background:linear-gradient(160deg,#F0FDF4 0%,#fff 60%)}
+.price-badge{position:absolute;top:20px;right:-1px;background:var(--green);color:#fff;padding:4px 14px;border-radius:8px 0 0 8px;font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.price-shift{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);margin-bottom:6px}
+.price-name{font-size:1.35rem;font-weight:800;color:var(--g900);margin-bottom:4px}
+.price-time{font-size:.88rem;color:var(--g500);margin-bottom:22px;display:flex;align-items:center;gap:6px}
+.price-rate{font-size:3rem;font-weight:900;color:var(--gd);line-height:1}
+.price-rate sub{font-size:.9rem;font-weight:500;color:var(--g500);vertical-align:baseline}
+.price-perks{margin-top:22px;display:flex;flex-direction:column;gap:9px}
+.perk{display:flex;align-items:center;gap:9px;font-size:.85rem;color:var(--g700)}
+.perk::before{content:'✓';width:18px;height:18px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0}
+.price-cta{margin-top:24px;width:100%;background:var(--green);color:#fff;padding:11px;border-radius:10px;font-size:.9rem;font-weight:700;transition:all .2s;cursor:pointer;border:none}
+.price-cta:hover{background:var(--gd)}
+
+/* ── AMENITIES ── */
+#amenities{background:var(--g50)}
+.amen-wrap{max-width:960px;margin:0 auto}
+.amen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.amen-card{background:#fff;border-radius:16px;padding:26px 18px;text-align:center;border:1px solid var(--g200);transition:all .3s}
+.amen-card:hover{border-color:var(--green);box-shadow:var(--sh);transform:translateY(-3px)}
+.amen-icon{font-size:2.2rem;margin-bottom:12px}
+.amen-name{font-size:.9rem;font-weight:700;color:var(--g900);margin-bottom:4px}
+.amen-desc{font-size:.77rem;color:var(--g500);line-height:1.5}
+.soon-tag{display:inline-block;background:var(--goldl);color:#92400E;padding:2px 9px;border-radius:50px;font-size:.65rem;font-weight:700;margin-top:7px}
+
+/* ── HOW TO BOOK ── */
+#how{background:#fff}
+.how-wrap{max-width:900px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;position:relative;margin-top:8px}
+.steps::before{content:'';position:absolute;top:30px;left:13%;right:13%;height:2px;background:var(--g200);z-index:0}
+.step{text-align:center;position:relative;z-index:1}
+.step-num{width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;font-size:1.35rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 14px rgba(26,107,60,.3)}
+.step-title{font-size:.9rem;font-weight:700;color:var(--g900);margin-bottom:5px}
+.step-desc{font-size:.78rem;color:var(--g500);line-height:1.55}
+
+/* ── BOOKING FORM ── */
+#book{background:linear-gradient(150deg,var(--gd) 0%,#0F5C2E 50%,var(--green) 100%);padding:80px 40px}
+.book-wrap{max-width:860px;margin:0 auto}
+.book-wrap .section-tag{color:var(--gold)}
+.book-wrap .section-title{color:#fff}
+.book-wrap .section-sub{color:rgba(255,255,255,.65)}
+.book-card{background:#fff;border-radius:24px;padding:36px;box-shadow:0 24px 64px rgba(0,0,0,.25);margin-top:32px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.frow.full{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:.78rem;font-weight:600;color:var(--g700)}
+.fg input,.fg select,.fg textarea{padding:11px 13px;border:2px solid var(--g200);border-radius:9px;font-size:.9rem;transition:border .2s;background:#fff;color:var(--g900)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green);outline:none}
+.btn-book{width:100%;background:var(--green);color:#fff;padding:14px;border-radius:11px;font-size:1rem;font-weight:700;transition:all .25s;margin-top:6px;cursor:pointer;border:none}
+.btn-book:hover{background:var(--gd)}
+.bk-success{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:20px;text-align:center;color:#166534;font-weight:600;margin-top:16px;display:none;font-size:.9rem;line-height:1.6}
+/* ── CALENDAR ── */
+.cal-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:24px;margin-top:32px}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-month-lbl{font-size:1.05rem;font-weight:800;color:#fff}
+.cal-nav-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.2rem;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.cal-nav-btn:hover{background:rgba(255,255,255,.3)}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;text-align:center}
+.cal-weekdays span{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;padding:3px 0}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-day{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.88rem;font-weight:600;color:#fff;position:relative;background:rgba(255,255,255,.08)}
+.cal-day:hover:not(.cal-past):not(.cal-empty){background:rgba(255,255,255,.22);transform:translateY(-1px)}
+.cal-day.cal-empty{background:transparent;cursor:default;pointer-events:none}
+.cal-day.cal-past{color:rgba(255,255,255,.2);cursor:default;background:rgba(255,255,255,.04)}
+.cal-day.cal-today{background:rgba(245,158,11,.2);border:2px solid rgba(245,158,11,.6)}
+.cal-day.cal-selected{background:var(--gold)!important;color:var(--gd)!important;box-shadow:0 4px 14px rgba(245,158,11,.4)}
+.cal-day.cal-has::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.cal-day.cal-selected.cal-has::after{background:var(--gd)}
+.cal-day.cal-full::after{background:#F87171}
+.cal-legend{display:flex;gap:20px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.cal-legend span{display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.55)}
+.cleg{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.cleg-open{background:rgba(255,255,255,.4)}
+.cleg-part{background:var(--gold)}
+.cleg-full{background:#F87171}
+/* ── SLOTS ── */
+.slot-section{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:24px;margin-top:12px;display:none}
+.slot-date-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.slot-date-lbl{font-size:1rem;font-weight:800;color:#fff}
+.slot-close-btn{background:rgba(255,255,255,.15);border:none;color:rgba(255,255,255,.7);padding:5px 14px;border-radius:50px;font-size:.78rem;cursor:pointer;transition:all .2s}
+.slot-close-btn:hover{background:rgba(255,255,255,.25);color:#fff}
+.shift-block{margin-bottom:18px}
+.shift-block:last-child{margin-bottom:0}
+.shift-block-lbl{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot-btn{border-radius:10px;padding:10px 6px;text-align:center;font-size:.82rem;font-weight:700;line-height:1.3;border:2px solid transparent;transition:all .2s}
+.slot-btn small{display:block;font-size:.68rem;font-weight:500;margin-top:2px;opacity:.85}
+.slot-avail{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25);cursor:pointer}
+.slot-avail:hover{background:rgba(255,255,255,.25);border-color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.slot-pool{background:rgba(245,158,11,.18);color:#FDE68A;border-color:rgba(245,158,11,.35);cursor:default}
+.slot-full{background:rgba(248,113,113,.12);color:rgba(248,113,113,.65);border-color:rgba(248,113,113,.25);cursor:default}
+/* ── SLOT BANNER ── */
+.slot-banner{background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px;flex-wrap:wrap}
+.slot-banner-info{font-size:.875rem;color:#FDE68A;font-weight:600}
+.slot-banner-change{background:none;border:1px solid rgba(245,158,11,.5);color:#FDE68A;padding:4px 12px;border-radius:50px;font-size:.75rem;cursor:pointer;transition:all .2s}
+.slot-banner-change:hover{background:rgba(245,158,11,.2)}
+
+/* ── CONTACT ── */
+#contact{background:var(--g50);padding:80px 40px}
+.contact-wrap{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.cinfo-list{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.cinfo{display:flex;align-items:flex-start;gap:14px;background:#fff;border-radius:12px;border:1px solid var(--g200);padding:16px 18px}
+.ci-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.ci-text strong{display:block;font-size:.83rem;font-weight:700;color:var(--g900);margin-bottom:3px}
+.ci-text span,.ci-text a{font-size:.875rem;color:var(--g500);line-height:1.6}
+.map-box{background:linear-gradient(135deg,var(--g100),var(--g200));border-radius:18px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px solid var(--g200);text-align:center;padding:20px}
+.map-box div{font-size:2.5rem}
+.map-box p{font-size:.875rem;color:var(--g700);font-weight:500}
+.map-box a{display:inline-block;background:var(--green);color:#fff;padding:9px 22px;border-radius:50px;font-size:.82rem;font-weight:600;margin-top:4px;transition:all .2s}
+.map-box a:hover{background:var(--gd)}
+
+/* ── FOOTER ── */
+footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
+.footer-logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.footer-logo-txt{font-size:.95rem;font-weight:800}
+.footer-logo-txt em{color:var(--gold);font-style:normal}
+.footer-open{font-size:.82rem;color:rgba(255,255,255,.55);margin-bottom:6px}
+.footer-open strong{color:var(--gold)}
+.footer-phone{font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:20px}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.08);padding-top:20px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:10px;font-size:.875rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.15);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:#166534;color:#fff}
+.toast.error{background:#DC2626;color:#fff}
+
+/* ── ADMIN LOGIN ── */
+#v-admin-login{display:none;min-height:100vh;background:linear-gradient(145deg,var(--gd),#0F5C2E,var(--green));align-items:center;justify-content:center;padding:20px}
+.adm-login-card{background:#fff;border-radius:24px;padding:44px 36px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.25);text-align:center}
+.adm-login-title{font-size:1.25rem;font-weight:800;color:var(--gd);margin-bottom:6px}
+.adm-login-sub{font-size:.875rem;color:var(--g500);margin-bottom:28px}
+.pin-input{width:100%;text-align:center;font-size:2rem;font-weight:700;letter-spacing:8px;padding:14px;border:2px solid var(--g200);border-radius:12px;color:var(--gd);transition:border .2s}
+.pin-input:focus{border-color:var(--green);outline:none}
+.btn-pin{width:100%;background:var(--green);color:#fff;padding:13px;border-radius:11px;font-size:1rem;font-weight:700;margin-top:14px;cursor:pointer;border:none;transition:all .2s}
+.btn-pin:hover{background:var(--gd)}
+.pin-err{color:#DC2626;font-size:.82rem;margin-top:10px;display:none}
+.adm-back{margin-top:16px;font-size:.82rem;color:var(--g500);cursor:pointer}
+.adm-back:hover{color:var(--green)}
+
+/* ── ADMIN MAIN ── */
+#v-admin{display:none;min-height:100vh;background:var(--g50)}
+.adm-topbar{background:#fff;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--g200);position:sticky;top:0;z-index:800;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.adm-brand{display:flex;align-items:center;gap:10px}
+.adm-brand-txt{font-size:.95rem;font-weight:800;color:var(--gd)}
+.adm-brand-txt em{color:var(--gold);font-style:normal}
+.adm-topbar-right{display:flex;align-items:center;gap:12px}
+.btn-adm-signout{background:transparent;color:var(--green);border:1.5px solid var(--green);padding:6px 16px;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-adm-signout:hover{background:var(--green);color:#fff}
+.adm-layout{display:flex;align-items:flex-start}
+.adm-sidebar{width:210px;flex-shrink:0;background:#fff;border-right:1px solid var(--g200);display:flex;flex-direction:column;padding:12px;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto}
+.adm-grp{font-size:.62rem;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:1px;padding:14px 10px 5px}
+.adm-tab{padding:9px 12px;border-radius:8px;font-size:.84rem;font-weight:600;color:var(--g600);background:transparent;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;width:100%;text-align:left}
+.adm-tab.active{background:var(--green);color:#fff}
+.adm-tab:hover:not(.active){background:var(--g100);color:var(--g900)}
+.adm-sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--g200)}
+.adm-content{flex:1;min-width:0;padding:28px 32px}
+.adm-panel{display:none}.adm-panel.active{display:block}
+.adm-panel-title{font-size:1.2rem;font-weight:800;color:var(--g900);margin-bottom:22px}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.adm-stat{background:#fff;border-radius:13px;padding:16px 18px;border:1px solid var(--g200);box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.adm-stat-lbl{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:5px}
+.adm-stat-num{font-size:1.75rem;font-weight:900;color:var(--gd)}
+.adm-stat.gold .adm-stat-num{color:var(--goldd)}
+.adm-stat.green .adm-stat-num{color:var(--green)}
+.adm-toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.adm-search{flex:1;min-width:160px;padding:9px 13px;border:2px solid var(--g200);border-radius:9px;font-size:.875rem;transition:border .2s}
+.adm-search:focus{border-color:var(--green);outline:none}
+.adm-filter{padding:9px 13px;border:2px solid var(--g200);border-radius:9px;font-size:.875rem;background:#fff;color:var(--g700);min-width:120px}
+.adm-filter:focus{border-color:var(--green);outline:none}
+.tbl-wrap{background:#fff;border-radius:13px;border:1px solid var(--g200);overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.04);overflow-x:auto}
+.adm-tbl{width:100%;border-collapse:collapse;min-width:680px}
+.adm-tbl th{background:var(--g50);padding:10px 13px;font-size:.68rem;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1px solid var(--g200)}
+.adm-tbl td{padding:11px 13px;font-size:.875rem;color:var(--g700);border-bottom:1px solid var(--g100)}
+.adm-tbl tr:last-child td{border-bottom:none}
+.adm-tbl tr:hover td{background:var(--g50)}
+.tbl-empty{text-align:center;padding:48px;color:var(--g500);font-size:.875rem}
+.sbadge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:50px;font-size:.7rem;font-weight:700}
+.sb-pending{background:#FEF3C7;color:#92400E}
+.sb-confirmed{background:#D1FAE5;color:#065F46}
+.sb-cancelled{background:#FEE2E2;color:#991B1B}
+.sb-completed{background:#DBEAFE;color:#1E40AF}
+.bico{background:none;border:none;cursor:pointer;padding:5px 7px;border-radius:6px;font-size:.9rem;transition:background .2s}
+.bico:hover{background:var(--g100)}
+.bico-x:hover{background:#FEE2E2}
+.ana-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.ana-card{background:#fff;border-radius:13px;border:1px solid var(--g200);padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.ana-card-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:14px}
+.ana-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--g100);font-size:.875rem;color:var(--g700)}
+.ana-row:last-child{border-bottom:none}
+.ana-row strong{color:var(--gd);font-weight:800}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  /* NAV */
+  #main-nav{padding:0 16px;height:64px}
+  .nav-links{display:none}.nav-ham{display:flex}
+  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:#fff;padding:20px 24px;gap:16px;box-shadow:0 8px 20px rgba(0,0,0,.1);z-index:800;border-top:1px solid var(--g200)}
+  /* SECTIONS */
+  section{padding:48px 16px}
+  #hero{padding:88px 16px 52px}
+  .hero-title{font-size:2rem;letter-spacing:-.5px}
+  .hero-svg-wrap svg{width:100px!important;height:100px!important}
+  .hero-tagline{font-size:1rem}
+  .hero-btns{flex-direction:column;align-items:center}
+  .btn-gold,.btn-ghost{width:100%;max-width:280px;text-align:center}
+  /* STATS */
+  .stats-bar{gap:16px;padding:16px}
+  .stat-num{font-size:1.5rem}
+  /* ABOUT */
+  .about-wrap{grid-template-columns:1fr}
+  .about-visual{display:none}
+  /* PRICING */
+  .price-grid{grid-template-columns:1fr}
+  /* AMENITIES */
+  .amen-grid{grid-template-columns:1fr 1fr}
+  /* HOW */
+  .steps{grid-template-columns:1fr 1fr;gap:20px}
+  .steps::before{display:none}
+  /* BOOKING */
+  #book{padding:48px 16px}
+  .book-wrap{padding:0}
+  .cal-card{padding:14px 10px;margin-top:20px}
+  .cal-month-lbl{font-size:.92rem}
+  .cal-nav-btn{width:30px;height:30px;font-size:1rem}
+  .cal-weekdays span{font-size:.58rem}
+  .cal-days{gap:4px}
+  .cal-day{font-size:.75rem;border-radius:7px}
+  .cal-legend{gap:10px;margin-top:10px}
+  .cal-legend span{font-size:.62rem}
+  .slot-section{padding:14px 10px;margin-top:10px}
+  .slot-date-hdr{margin-bottom:14px}
+  .slot-date-lbl{font-size:.88rem}
+  .shift-block-lbl{font-size:.66rem}
+  .slot-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .slot-btn{padding:9px 6px;font-size:.78rem}
+  .slot-btn small{font-size:.65rem}
+  .book-card{padding:20px 14px;margin-top:10px}
+  .slot-banner{flex-direction:column;align-items:flex-start;gap:8px;padding:10px 12px}
+  .slot-banner-info{font-size:.82rem}
+  .frow{grid-template-columns:1fr}
+  /* CONTACT */
+  .contact-wrap{grid-template-columns:1fr}
+  /* FOOTER */
+  footer{padding:32px 16px 20px}
+  /* ADMIN */
+  .adm-topbar{padding:0 14px;height:58px}
+  .adm-brand-txt{font-size:.8rem}
+  .adm-layout{flex-direction:column}
+  .adm-sidebar{width:100%;height:auto;position:static;border-right:none;border-bottom:1px solid var(--g200);flex-direction:row;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px;gap:4px;flex-wrap:nowrap;scrollbar-width:none}
+  .adm-sidebar::-webkit-scrollbar{display:none}
+  .adm-grp{display:none}
+  .adm-sidebar-bottom{margin-top:0;border-top:none;padding-top:0;flex-direction:row;align-items:center;flex-shrink:0}
+  .adm-tab{width:auto!important;white-space:nowrap;border-radius:50px;padding:7px 14px;font-size:.78rem}
+  .adm-content{padding:14px 12px}
+  .adm-stats{grid-template-columns:1fr 1fr;gap:10px}
+  .adm-stat{padding:12px 14px}
+  .adm-stat-num{font-size:1.5rem}
+  .adm-toolbar{flex-direction:column}
+  .adm-panel-title{font-size:1rem;margin-bottom:14px}
+  .ana-grid{grid-template-columns:1fr}
+  .adm-login-card{padding:32px 20px;margin:0 8px}
+}
+</style>
+</head>
+<body>
+<div id="v-website">
+
+<!-- ===== NAV ===== -->
+<nav id="main-nav">
+  <a href="#hero" class="nav-logo">
+    <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
+      <polygon points="50,5 61,35 93,35 68,55 78,85 50,68 22,85 32,55 7,35 39,35" fill="#F59E0B"/>
+      <circle cx="50" cy="43" r="13" fill="#fff"/>
+      <rect x="46.5" y="54" width="7" height="14" rx="3.5" fill="#fff"/>
+      <circle cx="45" cy="39" r="2" fill="#0A3D20"/>
+      <circle cx="55" cy="39" r="2" fill="#0A3D20"/>
+      <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
+    </svg>
+    <div class="nav-logo-txt">STAR <em>PicklePlay</em><br>Court</div>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#about" onclick="closeNav()">About</a>
+    <a href="#pricing" onclick="closeNav()">Pricing</a>
+    <a href="#amenities" onclick="closeNav()">Amenities</a>
+    <a href="#how" onclick="closeNav()">How to Book</a>
+    <a href="#contact" onclick="closeNav()">Contact</a>
+    <a href="#book" class="nav-cta" onclick="closeNav()">🏓 Book a Slot</a>
+  </div>
+  <div class="nav-ham" onclick="document.getElementById('navLinks').classList.toggle('open')"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-content">
+    <div class="hero-svg-wrap">
+      <svg width="150" height="150" viewBox="0 0 100 100" fill="none">
+        <polygon points="50,5 61,35 93,35 68,55 78,85 50,68 22,85 32,55 7,35 39,35" fill="#F59E0B" filter="drop-shadow(0 6px 16px rgba(245,158,11,.5))"/>
+        <circle cx="50" cy="43" r="13" fill="#fff"/>
+        <rect x="46.5" y="54" width="7" height="14" rx="3.5" fill="#fff"/>
+        <circle cx="45" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="55" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
+      </svg>
+    </div>
+    <div class="hero-opening">🏓 Opening — June 7, 2026</div>
+    <h1 class="hero-title">STAR <em>PicklePlay Court</em></h1>
+    <p class="hero-tagline">Serve · Rally · Win</p>
+    <p class="hero-loc">📍 <strong>CRP, Casay</strong>, Dalaguete, Cebu</p>
+    <div class="hero-btns">
+      <button class="btn-gold" onclick="gotoSection('book')">🏓 Book a Slot</button>
+      <button class="btn-ghost" onclick="gotoSection('pricing')">View Pricing</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">1</div><div class="stat-lbl">Court</div></div>
+  <div class="stat-item"><div class="stat-num">₱150</div><div class="stat-lbl">Starting / hr</div></div>
+  <div class="stat-item"><div class="stat-num">12hrs</div><div class="stat-lbl">Daily Operations</div></div>
+  <div class="stat-item"><div class="stat-num">💡</div><div class="stat-lbl">Night Lights</div></div>
+</div>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="about-wrap">
+    <div>
+      <div class="section-hdr">
+        <div class="section-tag">About the Court</div>
+        <h2 class="section-title">Dalaguete's First Pickleball Court</h2>
+        <p class="section-sub">A professional outdoor pickleball court in the heart of Casay, Dalaguete — built for everyone. Whether you're picking up a paddle for the first time or competing for bragging rights, you're welcome here.</p>
+      </div>
+      <div class="about-cards">
+        <div class="ac"><div class="ac-icon">🌿</div><div><strong>Outdoor Court</strong><span>Open-air setting with natural Cebu breeze</span></div></div>
+        <div class="ac"><div class="ac-icon">💡</div><div><strong>Night Lights</strong><span>Play comfortably well into midnight</span></div></div>
+        <div class="ac"><div class="ac-icon">🏓</div><div><strong>All Levels Welcome</strong><span>Beginners, casual, competitive & corporate</span></div></div>
+      </div>
+    </div>
+    <div class="about-visual">🏓</div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section id="pricing">
+  <div class="pricing-wrap">
+    <div class="section-hdr center">
+      <div class="section-tag">Pricing</div>
+      <h2 class="section-title">Simple, Honest Rates</h2>
+      <p class="section-sub">Book the full court by the hour. Bring your crew — the court is all yours.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-shift">1st Shift</div>
+        <div class="price-name">Morning Session</div>
+        <div class="price-time">🌅 5:00 AM – 9:00 AM</div>
+        <div class="price-rate">₱150 <sub>/ hour</sub></div>
+        <div class="price-perks">
+          <div class="perk">Full court access</div>
+          <div class="perk">Free parking</div>
+          <div class="perk">Restroom access</div>
+        </div>
+        <button class="price-cta" onclick="gotoSection('book');preselectShift('morning')">Book This Shift</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-shift">2nd Shift</div>
+        <div class="price-name">Afternoon & Night</div>
+        <div class="price-time">🌆 4:00 PM – 12:00 MN</div>
+        <div class="price-rate">₱180 <sub>/ hour</sub></div>
+        <div class="price-perks">
+          <div class="perk">Full court access</div>
+          <div class="perk">Free parking</div>
+          <div class="perk">Restroom access</div>
+          <div class="perk">Night lights included</div>
+        </div>
+        <button class="price-cta" onclick="gotoSection('book');preselectShift('afternoon')">Book This Shift</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AMENITIES ===== -->
+<section id="amenities">
+  <div class="amen-wrap">
+    <div class="section-hdr center">
+      <div class="section-tag">Amenities</div>
+      <h2 class="section-title">Everything You Need to Play</h2>
+    </div>
+    <div class="amen-grid">
+      <div class="amen-card">
+        <div class="amen-icon">🅿️</div>
+        <div class="amen-name">Free Parking</div>
+        <div class="amen-desc">Spacious on-site parking for all players</div>
+      </div>
+      <div class="amen-card">
+        <div class="amen-icon">🚽</div>
+        <div class="amen-name">Restrooms</div>
+        <div class="amen-desc">Clean comfort rooms available on-site</div>
+      </div>
+      <div class="amen-card">
+        <div class="amen-icon">💡</div>
+        <div class="amen-name">Night Lights</div>
+        <div class="amen-desc">Full court lighting until midnight</div>
+      </div>
+      <div class="amen-card">
+        <div class="amen-icon">🏓</div>
+        <div class="amen-name">Equipment Rental</div>
+        <div class="amen-desc">Paddles & balls for rent</div>
+        <div class="soon-tag">Coming Soon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW TO BOOK ===== -->
+<section id="how">
+  <div class="how-wrap">
+    <div class="section-hdr center">
+      <div class="section-tag">Booking Guide</div>
+      <h2 class="section-title">Reserve Your Slot in 4 Easy Steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Choose a Shift</div>
+        <div class="step-desc">Morning (5AM–9AM) or Afternoon/Night (4PM–12MN)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Fill the Form</div>
+        <div class="step-desc">Enter your name, number, preferred date and time</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Get Confirmed</div>
+        <div class="step-desc">We'll text or call you to confirm the reservation</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Show Up & Play!</div>
+        <div class="step-desc">Arrive on time and enjoy the court</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BOOKING FORM ===== -->
+<section id="book">
+  <div class="book-wrap">
+    <div class="section-hdr center">
+      <div class="section-tag">Reserve Now</div>
+      <h2 class="section-title">Check Availability & Book</h2>
+      <p class="section-sub">Pick a date to see available slots. Confirmed bookings show player count — perfect for court sharing!</p>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="cal-card">
+      <div class="cal-hdr">
+        <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
+        <div class="cal-month-lbl" id="cal-month-lbl"></div>
+        <button class="cal-nav-btn" onclick="calMove(1)">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+      <div class="cal-legend">
+        <span><span class="cleg cleg-open"></span>Open</span>
+        <span><span class="cleg cleg-part"></span>Some slots taken</span>
+        <span><span class="cleg cleg-full"></span>Fully booked</span>
+      </div>
+    </div>
+
+    <!-- SLOT GRID -->
+    <div class="slot-section" id="slot-section">
+      <div class="slot-date-hdr">
+        <div class="slot-date-lbl" id="slot-date-lbl"></div>
+        <button class="slot-close-btn" onclick="closeSlots()">✕ Close</button>
+      </div>
+      <div class="shift-block">
+        <div class="shift-block-lbl">🌅 1st Shift · Morning — ₱150/hr</div>
+        <div class="slot-grid" id="slots-morning"></div>
+      </div>
+      <div class="shift-block">
+        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night — ₱180/hr</div>
+        <div class="slot-grid" id="slots-afternoon"></div>
+      </div>
+    </div>
+
+    <!-- BOOKING FORM -->
+    <div class="book-card" id="book-form" style="display:none">
+      <div class="slot-banner">
+        <span class="slot-banner-info" id="slot-banner-info"></span>
+        <button class="slot-banner-change" onclick="clearSlot()">✕ Change slot</button>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Full Name *</label><input type="text" id="bk-name" placeholder="Your full name"></div>
+        <div class="fg"><label>Contact Number *</label><input type="tel" id="bk-phone" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value=this.value.replace(/\D/g,'')"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Duration *</label>
+          <select id="bk-dur"><option value="">Select…</option></select>
+        </div>
+        <div class="fg"><label>Number of Players *</label>
+          <select id="bk-players">
+            <option value="">Select…</option>
+            <option>2</option><option>3</option><option>4</option><option>5+</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow full">
+        <div class="fg"><label>Notes (optional)</label>
+          <textarea id="bk-notes" rows="2" placeholder="Special requests or anything we should know…"></textarea>
+        </div>
+      </div>
+      <button class="btn-book" id="btn-book" onclick="submitBooking()">🏓 Submit Reservation</button>
+      <div class="bk-success" id="bk-success">
+        ✅ Reservation submitted!<br>
+        We'll contact you at the number you provided to confirm your slot.<br>
+        <strong>See you on the court! 🏓</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div>
+      <div class="section-hdr">
+        <div class="section-tag">Find Us</div>
+        <h2 class="section-title">Location & Contact</h2>
+        <p class="section-sub">Located in Casay, Dalaguete, Cebu. Free parking on-site — easy to find.</p>
+      </div>
+      <div class="cinfo-list">
+        <div class="cinfo">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text"><strong>Address</strong><span>CRP, Casay, Dalaguete, Cebu</span></div>
+        </div>
+        <div class="cinfo">
+          <div class="ci-icon">📞</div>
+          <div class="ci-text"><strong>Phone / Viber</strong><a href="tel:09233142588">0923 314 2588</a></div>
+        </div>
+        <div class="cinfo">
+          <div class="ci-icon">🕐</div>
+          <div class="ci-text">
+            <strong>Operating Hours</strong>
+            <span>1st Shift: 5:00 AM – 9:00 AM<br>2nd Shift: 4:00 PM – 12:00 MN</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="map-box">
+      <div>🗺️</div>
+      <p>CRP, Casay<br>Dalaguete, Cebu</p>
+      <a href="https://maps.google.com/?q=Casay,Dalaguete,Cebu" target="_blank" rel="noopener">Open in Google Maps →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-logo-row">
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none">
+      <polygon points="50,5 61,35 93,35 68,55 78,85 50,68 22,85 32,55 7,35 39,35" fill="#F59E0B"/>
+      <circle cx="50" cy="43" r="13" fill="#fff"/>
+      <rect x="46.5" y="54" width="7" height="14" rx="3.5" fill="#fff"/>
+      <circle cx="45" cy="39" r="2" fill="#0A3D20"/>
+      <circle cx="55" cy="39" r="2" fill="#0A3D20"/>
+      <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
+    </svg>
+    <span class="footer-logo-txt">STAR <em>PicklePlay</em> Court</span>
+  </div>
+  <p class="footer-open">Opening <strong>June 7, 2026</strong> · CRP, Casay, Dalaguete, Cebu</p>
+  <p class="footer-phone">📞 0923 314 2588</p>
+  <p class="footer-copy">© 2026 Star PicklePlay Court. All rights reserved.</p>
+  <p style="margin-top:10px"><a href="#" style="font-size:.75rem;color:rgba(255,255,255,.2)" onclick="openAdmin();return false;">⛏ Staff Access</a></p>
+</footer>
+</div><!-- /v-website -->
+
+<!-- ===== ADMIN LOGIN ===== -->
+<div id="v-admin-login">
+  <div class="adm-login-card">
+    <div style="margin-bottom:16px">
+      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" style="margin:0 auto">
+        <polygon points="50,5 61,35 93,35 68,55 78,85 50,68 22,85 32,55 7,35 39,35" fill="#F59E0B"/>
+        <circle cx="50" cy="43" r="13" fill="#fff"/>
+        <rect x="46.5" y="54" width="7" height="14" rx="3.5" fill="#fff"/>
+        <circle cx="45" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="55" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
+      </svg>
+    </div>
+    <div class="adm-login-title">Staff Access</div>
+    <div class="adm-login-sub">Enter your PIN to access the admin panel</div>
+    <input type="password" class="pin-input" id="adm-pin" placeholder="••••" maxlength="6" onkeydown="if(event.key==='Enter')submitPin()">
+    <button class="btn-pin" id="btn-pin" onclick="submitPin()">Login</button>
+    <div class="pin-err" id="pin-err">Incorrect PIN. Please try again.</div>
+    <p class="adm-back" onclick="showView('v-website')">← Back to website</p>
+  </div>
+</div>
+
+<!-- ===== ADMIN MAIN ===== -->
+<div id="v-admin">
+  <div class="adm-topbar">
+    <div class="adm-brand">
+      <svg width="36" height="36" viewBox="0 0 100 100" fill="none">
+        <polygon points="50,5 61,35 93,35 68,55 78,85 50,68 22,85 32,55 7,35 39,35" fill="#F59E0B"/>
+        <circle cx="50" cy="43" r="13" fill="#fff"/>
+        <rect x="46.5" y="54" width="7" height="14" rx="3.5" fill="#fff"/>
+        <circle cx="45" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="55" cy="39" r="2" fill="#0A3D20"/>
+        <circle cx="50" cy="47" r="2" fill="#0A3D20"/>
+      </svg>
+      <span class="adm-brand-txt">STAR <em>PicklePlay</em> Court — Admin</span>
+    </div>
+    <button class="btn-adm-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+  <div class="adm-layout">
+    <div class="adm-sidebar">
+      <div class="adm-grp">Manage</div>
+      <button class="adm-tab active" id="adm-tab-bookings" onclick="switchAdmTab('bookings')">📋 Bookings</button>
+      <button class="adm-tab" id="adm-tab-analytics" onclick="switchAdmTab('analytics')">📊 Analytics</button>
+      <div class="adm-sidebar-bottom">
+        <button class="adm-tab" onclick="showView('v-website')">🏠 Back to Site</button>
+      </div>
+    </div>
+    <div class="adm-content">
+
+      <!-- BOOKINGS PANEL -->
+      <div class="adm-panel active" id="adm-panel-bookings">
+        <div class="adm-panel-title">📋 Bookings</div>
+        <div class="adm-stats">
+          <div class="adm-stat"><div class="adm-stat-lbl">Today</div><div class="adm-stat-num" id="stat-today">—</div></div>
+          <div class="adm-stat"><div class="adm-stat-lbl">Pending</div><div class="adm-stat-num" id="stat-pending">—</div></div>
+          <div class="adm-stat green"><div class="adm-stat-lbl">Confirmed</div><div class="adm-stat-num" id="stat-confirmed">—</div></div>
+          <div class="adm-stat gold"><div class="adm-stat-lbl">Est. Revenue</div><div class="adm-stat-num" id="stat-revenue">—</div></div>
+        </div>
+        <div class="adm-toolbar">
+          <input class="adm-search" type="text" id="adm-q" placeholder="Search name or phone…" oninput="renderAdmBookings()">
+          <input class="adm-filter" type="date" id="adm-df" onchange="renderAdmBookings()">
+          <select class="adm-filter" id="adm-sf" onchange="renderAdmBookings()">
+            <option value="">All Status</option>
+            <option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table class="adm-tbl">
+            <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Shift</th><th>Time / Duration</th><th>Est. Total</th><th>Status</th><th></th></tr></thead>
+            <tbody id="adm-bookings-tbody"><tr><td colspan="8" class="tbl-empty">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PANEL -->
+      <div class="adm-panel" id="adm-panel-analytics">
+        <div class="adm-panel-title">📊 Analytics</div>
+        <div id="ana-content"><div class="tbl-empty">Loading…</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyBo_JT5ZwXvJV2TSC3JGnZyPguLBVgbypU",
+  authDomain: "star-pickleplay-court.firebaseapp.com",
+  projectId: "star-pickleplay-court",
+  storageBucket: "star-pickleplay-court.firebasestorage.app",
+  messagingSenderId: "256764195543",
+  appId: "1:256764195543:web:8eae735022b70642b67692"
+};
+try { firebase.initializeApp(firebaseConfig); } catch(e){}
+var db; try { db = firebase.firestore(); } catch(e){}
+
+/* ── View management ── */
+function showView(id){
+  ['v-website','v-admin-login','v-admin'].forEach(function(v){
+    var el=document.getElementById(v);
+    if(el) el.style.display='none';
+  });
+  var t=document.getElementById(id);
+  if(!t) return;
+  t.style.display = id==='v-admin-login'?'flex':'block';
+  window.scrollTo(0,0);
+  if(id==='v-admin') loadAdminData();
+}
+
+function openAdmin(){
+  if(sessionStorage.getItem('sppc_adm')==='1') showView('v-admin');
+  else showView('v-admin-login');
+}
+
+function adminLogout(){
+  sessionStorage.removeItem('sppc_adm');
+  showView('v-website');
+}
+
+/* ── PIN login ── */
+function submitPin(){
+  var pin=document.getElementById('adm-pin').value.trim();
+  if(!pin) return;
+  var btn=document.getElementById('btn-pin');
+  btn.textContent='Checking…';btn.disabled=true;
+  document.getElementById('pin-err').style.display='none';
+  db.collection('settings').doc('admin').get().then(function(doc){
+    var stored=doc.exists?(doc.data().pin||'1234'):'1234';
+    if(pin===stored){sessionStorage.setItem('sppc_adm','1');showView('v-admin');}
+    else{document.getElementById('pin-err').style.display='block';document.getElementById('adm-pin').value='';btn.textContent='Login';btn.disabled=false;}
+  }).catch(function(){
+    if(pin==='1234'){sessionStorage.setItem('sppc_adm','1');showView('v-admin');}
+    else{document.getElementById('pin-err').style.display='block';document.getElementById('adm-pin').value='';btn.textContent='Login';btn.disabled=false;}
+  });
+}
+
+/* ── Admin tabs ── */
+function switchAdmTab(t){
+  ['bookings','analytics'].forEach(function(x){
+    document.getElementById('adm-panel-'+x).classList.toggle('active',x===t);
+    document.getElementById('adm-tab-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='analytics') renderAnalytics();
+}
+
+/* ── Bookings ── */
+var bookingsData=[];
+
+function loadAdminData(){ loadAdmBookings(); }
+
+function loadAdmBookings(){
+  document.getElementById('adm-bookings-tbody').innerHTML='<tr><td colspan="8" class="tbl-empty">Loading…</td></tr>';
+  var fetch=function(snap){
+    bookingsData=snap.docs.map(function(d){return Object.assign({_id:d.id},d.data());});
+    renderAdmBookings();updateAdmStats();
+  };
+  db.collection('bookings').orderBy('createdAt','desc').get().then(fetch)
+    .catch(function(){db.collection('bookings').get().then(fetch).catch(function(e){console.error(e);});});
+}
+
+function renderAdmBookings(){
+  var q=(document.getElementById('adm-q').value||'').toLowerCase();
+  var sf=document.getElementById('adm-sf').value;
+  var df=document.getElementById('adm-df').value;
+  var rows=bookingsData.filter(function(r){
+    return(!q||(r.name||'').toLowerCase().includes(q)||(r.phone||'').includes(q))
+      &&(!sf||r.status===sf)&&(!df||r.date===df);
+  });
+  if(!rows.length){document.getElementById('adm-bookings-tbody').innerHTML='<tr><td colspan="8" class="tbl-empty">No bookings found.</td></tr>';return;}
+  document.getElementById('adm-bookings-tbody').innerHTML=rows.map(function(r){
+    var isMorn=r.shift&&r.shift.includes('1st');
+    var total=(isMorn?150:180)*(r.duration||1);
+    return '<tr>'
+      +'<td style="white-space:nowrap">'+esc(r.date||'—')+'</td>'
+      +'<td><strong>'+esc(r.name||'—')+'</strong></td>'
+      +'<td>'+esc(r.phone||'—')+'</td>'
+      +'<td style="font-size:.8rem;color:var(--g500)">'+esc(r.shift||'—')+'</td>'
+      +'<td>'+esc(r.startTime||'—')+' <span style="color:var(--g500);font-size:.8rem">('+r.duration+'hr)</span></td>'
+      +'<td style="font-weight:700;color:var(--gd)">₱'+total.toLocaleString()+'</td>'
+      +'<td><span class="sbadge '+sbCls(r.status)+'">'+esc(r.status||'Pending')+'</span></td>'
+      +'<td style="white-space:nowrap">'
+        +(r.status==='Pending'?'<button class="bico" title="Confirm" onclick="updateBk(\''+r._id+'\',\'Confirmed\')">✅</button>':'')
+        +(r.status==='Confirmed'?'<button class="bico" title="Mark Done" onclick="updateBk(\''+r._id+'\',\'Completed\')">🏁</button>':'')
+        +(r.status!=='Cancelled'&&r.status!=='Completed'?'<button class="bico bico-x" title="Cancel" onclick="updateBk(\''+r._id+'\',\'Cancelled\')">❌</button>':'')
+      +'</td></tr>';
+  }).join('');
+}
+
+function sbCls(s){return s==='Confirmed'?'sb-confirmed':s==='Cancelled'?'sb-cancelled':s==='Completed'?'sb-completed':'sb-pending';}
+
+function updateBk(id,status){
+  db.collection('bookings').doc(id).update({status:status}).then(function(){
+    var b=bookingsData.find(function(x){return x._id===id;});
+    if(b) b.status=status;
+    renderAdmBookings();updateAdmStats();
+    showToast(status==='Confirmed'?'Booking confirmed!':status==='Cancelled'?'Booking cancelled.':'Marked as done.','success');
+  }).catch(function(e){showToast('Error: '+e.message,'error');});
+}
+
+function updateAdmStats(){
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('stat-today').textContent=bookingsData.filter(function(b){return b.date===today;}).length;
+  document.getElementById('stat-pending').textContent=bookingsData.filter(function(b){return b.status==='Pending';}).length;
+  document.getElementById('stat-confirmed').textContent=bookingsData.filter(function(b){return b.status==='Confirmed';}).length;
+  var rev=bookingsData.filter(function(b){return b.status!=='Cancelled';}).reduce(function(s,b){
+    return s+((b.shift&&b.shift.includes('1st')?150:180)*(b.duration||1));
+  },0);
+  document.getElementById('stat-revenue').textContent='₱'+rev.toLocaleString();
+}
+
+/* ── Analytics ── */
+function renderAnalytics(){
+  var byShift={m:0,a:0};var byStatus={Pending:0,Confirmed:0,Completed:0,Cancelled:0};var rev={m:0,a:0};
+  bookingsData.forEach(function(b){
+    var m=b.shift&&b.shift.includes('1st');
+    if(m)byShift.m++;else byShift.a++;
+    byStatus[b.status]=(byStatus[b.status]||0)+1;
+    if(b.status!=='Cancelled'){var r=(m?150:180)*(b.duration||1);if(m)rev.m+=r;else rev.a+=r;}
+  });
+  document.getElementById('ana-content').innerHTML=
+    '<div class="ana-grid">'
+    +'<div class="ana-card"><div class="ana-card-title">Bookings by Shift</div>'
+    +'<div class="ana-row"><span>🌅 1st Shift (Morning)</span><strong>'+byShift.m+'</strong></div>'
+    +'<div class="ana-row"><span>🌆 2nd Shift (Afternoon/Night)</span><strong>'+byShift.a+'</strong></div>'
+    +'<div class="ana-row"><span>Total</span><strong>'+bookingsData.length+'</strong></div></div>'
+    +'<div class="ana-card"><div class="ana-card-title">Booking Status</div>'
+    +'<div class="ana-row"><span>⏳ Pending</span><strong>'+(byStatus.Pending||0)+'</strong></div>'
+    +'<div class="ana-row"><span>✅ Confirmed</span><strong>'+(byStatus.Confirmed||0)+'</strong></div>'
+    +'<div class="ana-row"><span>🏁 Completed</span><strong>'+(byStatus.Completed||0)+'</strong></div>'
+    +'<div class="ana-row"><span>❌ Cancelled</span><strong>'+(byStatus.Cancelled||0)+'</strong></div></div>'
+    +'<div class="ana-card"><div class="ana-card-title">Estimated Revenue</div>'
+    +'<div class="ana-row"><span>🌅 1st Shift</span><strong>₱'+rev.m.toLocaleString()+'</strong></div>'
+    +'<div class="ana-row"><span>🌆 2nd Shift</span><strong>₱'+rev.a.toLocaleString()+'</strong></div>'
+    +'<div class="ana-row"><span>Total</span><strong>₱'+(rev.m+rev.a).toLocaleString()+'</strong></div></div>'
+    +'</div>';
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ── Helpers ── */
+function gotoSection(id){ var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'}); }
+function closeNav(){ document.getElementById('navLinks').classList.remove('open'); }
+function showToast(msg, type){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+/* ── Calendar state ── */
+var calYear, calMonth, confirmedBookings=[], selectedSlot=null;
+var MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var MONTH_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DAY_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function initCalendar(){
+  var n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth();
+  loadConfirmedBookings();
+}
+
+function loadConfirmedBookings(){
+  if(!db){renderCalendar();return;}
+  db.collection('bookings').where('status','==','Confirmed').get()
+    .then(function(s){
+      confirmedBookings=s.docs.map(function(d){return Object.assign({_id:d.id},d.data());});
+      renderCalendar();
+    }).catch(function(){renderCalendar();});
+}
+
+function renderCalendar(){
+  document.getElementById('cal-month-lbl').textContent=MONTH_NAMES[calMonth]+' '+calYear;
+  var today=new Date(); today.setHours(0,0,0,0);
+  var firstDay=new Date(calYear,calMonth,1).getDay();
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+
+  // Build per-day slot usage map
+  var dayMap={};
+  confirmedBookings.forEach(function(b){
+    if(!b.date) return;
+    var p=b.date.split('-');
+    if(parseInt(p[0])!==calYear||parseInt(p[1])-1!==calMonth) return;
+    var d=parseInt(p[2]);
+    dayMap[d]=(dayMap[d]||0)+(parseInt(b.duration)||1);
+  });
+
+  var html='';
+  for(var i=0;i<firstDay;i++) html+='<div class="cal-day cal-empty"></div>';
+  for(var day=1;day<=daysInMonth;day++){
+    var dt=new Date(calYear,calMonth,day); dt.setHours(0,0,0,0);
+    var ds=calYear+'-'+pad2(calMonth+1)+'-'+pad2(day);
+    var past=dt<today, isToday=dt.getTime()===today.getTime();
+    var used=dayMap[day]||0, full=used>=12, hasBk=used>0;
+    var cls='cal-day'+(past?' cal-past':'')+(isToday?' cal-today':'')+(hasBk&&!full?' cal-has':'')+(full?' cal-has cal-full':'');
+    var click=!past?'onclick="selectCalDay(\''+ds+'\')"':'';
+    html+='<div class="'+cls+'" '+click+'>'+day+'</div>';
+  }
+  document.getElementById('cal-days').innerHTML=html;
+}
+
+function pad2(n){return n<10?'0'+n:String(n);}
+
+function calMove(dir){
+  calMonth+=dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  confirmedBookings=[];
+  loadConfirmedBookings();
+  closeSlots();
+}
+
+function selectCalDay(ds){
+  document.querySelectorAll('.cal-day').forEach(function(el){el.classList.remove('cal-selected');});
+  var p=ds.split('-'),targetDay=parseInt(p[2]);
+  var firstDay=new Date(parseInt(p[0]),parseInt(p[1])-1,1).getDay();
+  var cells=document.getElementById('cal-days').querySelectorAll('.cal-day');
+  var idx=firstDay+targetDay-1;
+  if(cells[idx]) cells[idx].classList.add('cal-selected');
+  renderSlots(ds);
+}
+
+function renderSlots(ds){
+  var dayBk=confirmedBookings.filter(function(b){return b.date===ds;});
+  var blocked={};
+  dayBk.forEach(function(b){
+    var sh=parseHr(b.startTime), dur=parseInt(b.duration)||1;
+    for(var h=sh;h<sh+dur;h++) blocked[h]={players:b.players||'?'};
+  });
+  var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  document.getElementById('slot-date-lbl').textContent=DAY_FULL[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  document.getElementById('slots-morning').innerHTML=buildSlotGrid([5,6,7,8],blocked,ds,'morning');
+  document.getElementById('slots-afternoon').innerHTML=buildSlotGrid([16,17,18,19,20,21,22,23],blocked,ds,'afternoon');
+  document.getElementById('slot-section').style.display='block';
+  document.getElementById('book-form').style.display='none';
+  selectedSlot=null;
+  setTimeout(function(){document.getElementById('slot-section').scrollIntoView({behavior:'smooth',block:'nearest'});},120);
+}
+
+function buildSlotGrid(hours,blocked,ds,shift){
+  return hours.map(function(h){
+    var t=fmtHr(h), b=blocked[h];
+    if(b){
+      var n=parseInt(b.players)||0, full=n>=4;
+      var cls=full?'slot-btn slot-full':'slot-btn slot-pool';
+      var lbl=full?'Full · '+b.players+' players':b.players+' player'+(b.players!=='1'?'s':'');
+      return '<div class="'+cls+'">'+t+'<small>'+lbl+'</small></div>';
+    }
+    return '<button class="slot-btn slot-avail" onclick="selectSlot(\''+ds+'\',\''+shift+'\',\''+t+'\')">'+t+'<small>Available</small></button>';
+  }).join('');
+}
+
+function parseHr(s){
+  if(!s) return 0;
+  var m=s.match(/(\d+):00\s*(AM|PM)/i); if(!m) return 0;
+  var h=parseInt(m[1]),ap=m[2].toUpperCase();
+  if(ap==='PM'&&h!==12) h+=12;
+  if(ap==='AM'&&h===12) h=0;
+  return h;
+}
+function fmtHr(h){
+  if(h===0) return '12:00 AM';
+  if(h===12) return '12:00 PM';
+  if(h<12) return h+':00 AM';
+  return (h-12)+':00 PM';
+}
+
+function selectSlot(ds,shift,timeStr){
+  selectedSlot={date:ds,shift:shift,time:timeStr};
+  var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  var shiftLbl=shift==='morning'?'1st Shift (₱150/hr)':'2nd Shift (₱180/hr)';
+  document.getElementById('slot-banner-info').textContent='📅 '+DAY_SHORT[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+' · '+timeStr+' · '+shiftLbl;
+  var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
+  var durEl=document.getElementById('bk-dur');
+  durEl.innerHTML='<option value="">Select…</option>';
+  for(var i=1;i<=maxHrs;i++) durEl.innerHTML+='<option value="'+i+'">'+i+' hour'+(i>1?'s':'')+'</option>';
+  document.getElementById('bk-success').style.display='none';
+  document.getElementById('btn-book').style.display='';
+  document.getElementById('btn-book').textContent='🏓 Submit Reservation';
+  document.getElementById('btn-book').disabled=false;
+  document.getElementById('book-form').style.display='block';
+  setTimeout(function(){document.getElementById('book-form').scrollIntoView({behavior:'smooth',block:'nearest'});},120);
+}
+
+function clearSlot(){
+  selectedSlot=null;
+  document.getElementById('book-form').style.display='none';
+}
+
+function closeSlots(){
+  document.getElementById('slot-section').style.display='none';
+  document.getElementById('book-form').style.display='none';
+  selectedSlot=null;
+  document.querySelectorAll('.cal-day').forEach(function(el){el.classList.remove('cal-selected');});
+}
+
+function preselectShift(shift){
+  gotoSection('book');
+  setTimeout(function(){showToast('Select a date to see '+(shift==='morning'?'morning':'afternoon/night')+' slots.','success');},400);
+}
+
+/* ── Submit booking ── */
+function submitBooking(){
+  if(!selectedSlot){showToast('Please select a slot from the calendar first.','error');return;}
+  var name=document.getElementById('bk-name').value.trim();
+  var phone=document.getElementById('bk-phone').value.trim();
+  var dur=document.getElementById('bk-dur').value;
+  var players=document.getElementById('bk-players').value;
+  var notes=document.getElementById('bk-notes').value.trim();
+  if(!name||!phone||!dur||!players){showToast('Please fill in all required fields.','error');return;}
+  if(phone.length<10){showToast('Please enter a valid phone number.','error');return;}
+  var btn=document.getElementById('btn-book');
+  btn.textContent='Submitting…';btn.disabled=true;
+  var data={
+    name:name,phone:phone,date:selectedSlot.date,
+    shift:selectedSlot.shift==='morning'?'1st Shift (5AM–9AM)':'2nd Shift (4PM–12MN)',
+    startTime:selectedSlot.time,duration:parseInt(dur),
+    players:players,notes:notes,
+    status:'Pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if(db){
+    db.collection('bookings').add(data).then(function(){
+      sendNotify('pickleplay','booking',data);
+      onBookingSuccess();
+    }).catch(function(e){showToast('Error: '+e.message,'error');btn.textContent='🏓 Submit Reservation';btn.disabled=false;});
+  } else {onBookingSuccess();}
+}
+
+function onBookingSuccess(){
+  document.getElementById('bk-success').style.display='block';
+  document.getElementById('btn-book').style.display='none';
+  ['bk-name','bk-phone','bk-dur','bk-players','bk-notes'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+}
+
+function sendNotify(source,type,data){
+  fetch('https://notify.clsworks.com',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({source:source,type:type,data:data})
+  }).catch(function(){});
+}
+
+/* ── Init ── */
+initCalendar();
+
+/* ── Floating orbs in hero ── */
+(function(){
+  var bg = document.getElementById('heroBg');
+  for(var i=0;i<10;i++){
+    var d = document.createElement('div');
+    var s = 40 + Math.random()*100;
+    d.className = 'hero-orb';
+    d.style.cssText = 'width:'+s+'px;height:'+s+'px;left:'+(Math.random()*100)+'%;animation-duration:'+(10+Math.random()*14)+'s;animation-delay:'+(Math.random()*10)+'s';
+    bg.appendChild(d);
+  }
+})();
+</script>
+</body>
+</html>
