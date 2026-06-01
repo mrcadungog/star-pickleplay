@@ -941,7 +941,6 @@ function initPricing(){
     document.getElementById('price-rate-a').innerHTML='FREE <sub>Jun 7–9 only</sub>';
     document.getElementById('shift-lbl-m').textContent='🌅 1st Shift · Morning — FREE';
     document.getElementById('shift-lbl-a').textContent='🌆 2nd Shift · Afternoon & Night — FREE';
-    document.getElementById('dur-label').textContent='Duration * (1 hr max — Soft Launch)';
   }
 }
 document.addEventListener('DOMContentLoaded',initPricing);
@@ -1085,8 +1084,9 @@ function selectSlot(ds,shift,timeStr){
   var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
   var durEl=document.getElementById('bk-dur');
   durEl.innerHTML='<option value="">Select…</option>';
-  var maxAllowed=isSoftLaunch?1:maxHrs;
+  var maxAllowed=isSLDate?1:maxHrs;
   for(var i=1;i<=maxAllowed;i++) durEl.innerHTML+='<option value="'+i+'">'+i+' hour'+(i>1?'s':'')+'</option>';
+  document.getElementById('dur-label').textContent=isSLDate?'Duration * (1 hr max — Soft Launch)':'Duration *';
   document.getElementById('bk-success').style.display='none';
   document.getElementById('btn-book').style.display='';
   document.getElementById('btn-book').textContent='🏓 Submit Reservation';
