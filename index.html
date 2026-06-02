@@ -544,7 +544,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-title">Choose a Shift</div>
-        <div class="step-desc">Morning (5AM–9AM) or Afternoon/Night (4PM–12MN)</div>
+        <div class="step-desc">Morning (5:30–8:30 AM) or Afternoon/Night (3PM–3AM)</div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -634,38 +634,47 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
           <textarea id="bk-notes" rows="2" placeholder="Special requests or anything we should know…"></textarea>
         </div>
       </div>
-      <div class="frow full">
-        <div class="fg">
-          <label>Payment Method *</label>
-          <div class="pay-opts">
-            <label class="pay-opt selected" id="payopt-online">
-              <input type="radio" name="pay-method" value="online" checked onchange="onPayMethod(this)">
-              <span class="pay-opt-icon">📱</span>
-              <div>
-                <div class="pay-opt-title">Pay Online (GCash)</div>
-                <div class="pay-opt-desc">Slot reserved immediately after payment is verified</div>
-              </div>
-            </label>
-            <label class="pay-opt" id="payopt-onsite">
-              <input type="radio" name="pay-method" value="onsite" onchange="onPayMethod(this)">
-              <span class="pay-opt-icon">🏪</span>
-              <div>
-                <div class="pay-opt-title">Pay Onsite</div>
-                <div class="pay-opt-desc">Attendant will contact you to confirm your slot</div>
-              </div>
-            </label>
+      <!-- Shown only on soft launch dates (Jun 7–9) -->
+      <div id="sl-free-notice" style="display:none;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;padding:16px;text-align:center;margin-bottom:4px">
+        <div style="font-size:1.5rem;margin-bottom:4px">🎉</div>
+        <strong style="color:#166534;font-size:.95rem;display:block;margin-bottom:4px">No payment needed!</strong>
+        <span style="color:#15803D;font-size:.83rem">June 7, 8 &amp; 9 are completely FREE.<br>Just reserve your slot and show up!</span>
+      </div>
+      <!-- Hidden on soft launch dates -->
+      <div id="payment-section-wrap">
+        <div class="frow full">
+          <div class="fg">
+            <label>Payment Method *</label>
+            <div class="pay-opts">
+              <label class="pay-opt selected" id="payopt-online">
+                <input type="radio" name="pay-method" value="online" checked onchange="onPayMethod(this)">
+                <span class="pay-opt-icon">📱</span>
+                <div>
+                  <div class="pay-opt-title">Pay Online (GCash)</div>
+                  <div class="pay-opt-desc">Slot reserved immediately after payment is verified</div>
+                </div>
+              </label>
+              <label class="pay-opt" id="payopt-onsite">
+                <input type="radio" name="pay-method" value="onsite" onchange="onPayMethod(this)">
+                <span class="pay-opt-icon">🏪</span>
+                <div>
+                  <div class="pay-opt-title">Pay Onsite</div>
+                  <div class="pay-opt-desc">Attendant will contact you to confirm your slot</div>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="frow full" id="proof-section">
-        <div class="fg">
-          <label>GCash Receipt *</label>
-          <div class="upload-area" id="upload-area" onclick="document.getElementById('bk-proof').click()">
-            <div id="upload-placeholder">📎 Tap to upload your payment screenshot<br><span class="upload-area-lbl">JPG, PNG • Max 10MB</span></div>
-            <img id="upload-preview" class="upload-preview" alt="Proof preview" style="display:none">
+        <div class="frow full" id="proof-section">
+          <div class="fg">
+            <label>GCash Receipt *</label>
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('bk-proof').click()">
+              <div id="upload-placeholder">📎 Tap to upload your payment screenshot<br><span class="upload-area-lbl">JPG, PNG • Max 10MB</span></div>
+              <img id="upload-preview" class="upload-preview" alt="Proof preview" style="display:none">
+            </div>
+            <input type="file" id="bk-proof" accept="image/*" style="display:none" onchange="onProofSelected(this)">
+            <div class="upload-prog" id="upload-prog"><div class="upload-prog-bar" id="upload-prog-bar"></div></div>
           </div>
-          <input type="file" id="bk-proof" accept="image/*" style="display:none" onchange="onProofSelected(this)">
-          <div class="upload-prog" id="upload-prog"><div class="upload-prog-bar" id="upload-prog-bar"></div></div>
         </div>
       </div>
       <button class="btn-book" id="btn-book" onclick="submitBooking()">🏓 Submit Reservation</button>
@@ -696,7 +705,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
           <div class="ci-icon">🕐</div>
           <div class="ci-text">
             <strong>Operating Hours</strong>
-            <span>1st Shift: 5:00 AM – 9:00 AM<br>2nd Shift: 4:00 PM – 12:00 MN</span>
+            <span>1st Shift: 5:30 AM – 8:30 AM<br>2nd Shift: 3:00 PM – 3:00 AM</span>
           </div>
         </div>
       </div>
@@ -1156,10 +1165,20 @@ function selectSlot(ds,shift,timeStr){
   document.getElementById('dur-label').textContent=isSLDate?'Duration * (max 2 hrs — Soft Launch)':'Duration *';
   document.getElementById('bk-success').style.display='none';
   document.getElementById('btn-book').style.display='';
-  document.getElementById('btn-book').textContent='🏓 Submit Reservation';
   document.getElementById('btn-book').disabled=false;
-  var onlineRadio=document.querySelector('input[name="pay-method"][value="online"]');
-  if(onlineRadio){onlineRadio.checked=true;onPayMethod(onlineRadio);}
+  var payWrap=document.getElementById('payment-section-wrap');
+  var slNotice=document.getElementById('sl-free-notice');
+  if(isSLDate){
+    if(payWrap) payWrap.style.display='none';
+    if(slNotice) slNotice.style.display='block';
+    document.getElementById('btn-book').textContent='🎉 Reserve My FREE Slot';
+  } else {
+    if(payWrap) payWrap.style.display='';
+    if(slNotice) slNotice.style.display='none';
+    document.getElementById('btn-book').textContent='🏓 Submit Reservation';
+    var onlineRadio=document.querySelector('input[name="pay-method"][value="online"]');
+    if(onlineRadio){onlineRadio.checked=true;onPayMethod(onlineRadio);}
+  }
   document.getElementById('book-form').style.display='block';
   setTimeout(function(){document.getElementById('book-form').scrollIntoView({behavior:'smooth',block:'nearest'});},120);
 }
@@ -1233,12 +1252,12 @@ function submitBooking(){
   var dur=document.getElementById('bk-dur').value;
   var players=document.getElementById('bk-players').value;
   var notes=document.getElementById('bk-notes').value.trim();
-  var payMethod=document.querySelector('input[name="pay-method"]:checked').value;
-  var proofFile=payMethod==='online'?document.getElementById('bk-proof').files[0]:null;
   var isSLDate=SL_DATES.indexOf(selectedSlot.date)!==-1;
+  var payMethod=isSLDate?'free':(document.querySelector('input[name="pay-method"]:checked')||{value:'onsite'}).value;
+  var proofFile=(!isSLDate&&payMethod==='online')?document.getElementById('bk-proof').files[0]:null;
   if(!name||!phone||!dur||!players){showToast('Please fill in all required fields.','error');return;}
   if(phone.length<10){showToast('Please enter a valid phone number.','error');return;}
-  if(payMethod==='online'&&!proofFile){showToast('Please upload your GCash receipt.','error');return;}
+  if(!isSLDate&&payMethod==='online'&&!proofFile){showToast('Please upload your GCash receipt.','error');return;}
   var btn=document.getElementById('btn-book');
   var prog=document.getElementById('upload-prog');
   var progBar=document.getElementById('upload-prog-bar');
@@ -1249,13 +1268,15 @@ function submitBooking(){
     shift:selectedSlot.shift==='morning'?'1st Shift (5:30–8:30 AM)':'2nd Shift (3PM–3AM)',
     startTime:selectedSlot.time,duration:finalDur,
     players:players,notes:notes,payMethod:payMethod,
-    status:payMethod==='online'?'Payment Submitted':'Pending',
-    hasProof:payMethod==='online',
+    status:isSLDate?'Confirmed':(payMethod==='online'?'Payment Submitted':'Pending'),
+    hasProof:false,
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   };
-  var successMsg=payMethod==='online'
-    ?'✅ Slot reserved! Your payment is under review.<br>We\'ll confirm your booking once we verify your receipt.<br><strong>See you on the court! 🏓</strong>'
-    :'📋 Request received!<br>Our attendant will contact you to confirm your slot.<br><strong>See you on the court! 🏓</strong>';
+  var successMsg=isSLDate
+    ?'🎉 You\'re in! Your slot is confirmed.<br>No charge — June 7, 8 &amp; 9 are on us.<br><strong>See you on the court! 🏓</strong>'
+    :(payMethod==='online'
+      ?'✅ Slot reserved! Your payment is under review.<br>We\'ll confirm once we verify your receipt.<br><strong>See you on the court! 🏓</strong>'
+      :'📋 Request received!<br>Our attendant will contact you to confirm your slot.<br><strong>See you on the court! 🏓</strong>');
   function doSubmitFlow(){
     if(payMethod==='online'&&proofFile){
     prog.style.display='block'; progBar.style.width='30%';
