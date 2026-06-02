@@ -465,6 +465,9 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
       <div class="section-tag">Pricing</div>
       <h2 class="section-title">Simple, Honest Rates</h2>
       <p class="section-sub">Book the full court by the hour. Bring your crew — the court is all yours.</p>
+      <div id="sl-pricing-note" style="display:none;margin-top:12px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 18px;font-size:.88rem;font-weight:600;color:#166534;">
+        🎉 <strong>June 7, 8 &amp; 9 — FREE!</strong> Soft launch dates are completely free. No charge for any booking on these days.
+      </div>
     </div>
     <div class="price-grid">
       <div class="price-card">
@@ -899,7 +902,7 @@ function renderAdmBookings(){
   if(!rows.length){document.getElementById('adm-bookings-tbody').innerHTML='<tr><td colspan="8" class="tbl-empty">No bookings found.</td></tr>';return;}
   document.getElementById('adm-bookings-tbody').innerHTML=rows.map(function(r){
     var isMorn=r.shift&&r.shift.includes('1st');
-    var total=200*(r.duration||1);
+    var total=(SL_DATES.indexOf(r.date)!==-1?0:200)*(r.duration||1);
     return '<tr>'
       +'<td style="white-space:nowrap">'+esc(r.date||'—')+'</td>'
       +'<td><strong>'+esc(r.name||'—')+'</strong></td>'
@@ -934,7 +937,7 @@ function updateAdmStats(){
   document.getElementById('stat-pending').textContent=bookingsData.filter(function(b){return b.status==='Pending'||b.status==='Payment Submitted';}).length;
   document.getElementById('stat-confirmed').textContent=bookingsData.filter(function(b){return b.status==='Confirmed';}).length;
   var rev=bookingsData.filter(function(b){return b.status!=='Cancelled';}).reduce(function(s,b){
-    return s+(200*(b.duration||1));
+    return s+((SL_DATES.indexOf(b.date)!==-1?0:200)*(b.duration||1));
   },0);
   document.getElementById('stat-revenue').textContent='₱'+rev.toLocaleString();
 }
@@ -946,7 +949,7 @@ function renderAnalytics(){
     var m=b.shift&&b.shift.includes('1st');
     if(m)byShift.m++;else byShift.a++;
     byStatus[b.status]=(byStatus[b.status]||0)+1;
-    if(b.status!=='Cancelled'){var r=200*(b.duration||1);if(m)rev.m+=r;else rev.a+=r;}
+    if(b.status!=='Cancelled'){var r=(SL_DATES.indexOf(b.date)!==-1?0:200)*(b.duration||1);if(m)rev.m+=r;else rev.a+=r;}
   });
   document.getElementById('ana-content').innerHTML=
     '<div class="ana-grid">'
@@ -992,6 +995,8 @@ function initPricing(){
       banner.style.display='block';
       requestAnimationFrame(function(){document.getElementById('main-nav').style.top=banner.offsetHeight+'px';});
     }
+    var slNote=document.getElementById('sl-pricing-note');
+    if(slNote) slNote.style.display='block';
   }
   if(isSoftLaunch){
     document.getElementById('hero-opening').textContent='🎉 Soft Launch — June 7, 8 & 9';
@@ -1241,7 +1246,7 @@ function submitBooking(){
   var finalDur=isSLDate?Math.min(parseInt(dur)||1,2):parseInt(dur);
   var data={
     name:name,phone:phone,date:selectedSlot.date,
-    shift:selectedSlot.shift==='morning'?'1st Shift (5AM–9AM)':'2nd Shift (4PM–12MN)',
+    shift:selectedSlot.shift==='morning'?'1st Shift (5:30–8:30 AM)':'2nd Shift (3PM–3AM)',
     startTime:selectedSlot.time,duration:finalDur,
     players:players,notes:notes,payMethod:payMethod,
     status:payMethod==='online'?'Payment Submitted':'Pending',
