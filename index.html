@@ -470,7 +470,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
       <div class="price-card">
         <div class="price-shift">1st Shift</div>
         <div class="price-name">Morning Session</div>
-        <div class="price-time">🌅 5:00 AM – 9:00 AM</div>
+        <div class="price-time">🌅 5:30 AM – 8:30 AM</div>
         <div class="price-rate">₱200 <sub>/ hour</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
@@ -483,7 +483,7 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <div class="price-badge">Most Popular</div>
         <div class="price-shift">2nd Shift</div>
         <div class="price-name">Afternoon & Night</div>
-        <div class="price-time">🌆 4:00 PM – 12:00 MN</div>
+        <div class="price-time">🌆 3:00 PM – 3:00 AM</div>
         <div class="price-rate">₱200 <sub>/ hour</sub></div>
         <div class="price-perks">
           <div class="perk">Full court access</div>
@@ -596,11 +596,11 @@ footer{background:var(--gd);color:#fff;padding:44px 40px 28px;text-align:center}
         <button class="slot-close-btn" onclick="closeSlots()">✕ Close</button>
       </div>
       <div class="shift-block" id="shift-block-m">
-        <div class="shift-block-lbl">🌅 1st Shift · Morning — ₱200/hr</div>
+        <div class="shift-block-lbl">🌅 1st Shift · Morning (5:30–8:30 AM) — ₱200/hr</div>
         <div class="slot-grid" id="slots-morning"></div>
       </div>
       <div class="shift-block">
-        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night — ₱200/hr</div>
+        <div class="shift-block-lbl">🌆 2nd Shift · Afternoon & Night (3:00 PM–3:00 AM) — ₱200/hr</div>
         <div class="slot-grid" id="slots-afternoon"></div>
       </div>
     </div>
@@ -1082,14 +1082,18 @@ function renderSlots(ds){
   var blocked={};
   dayBk.forEach(function(b){
     var sh=parseHr(b.startTime), dur=parseInt(b.duration)||1;
-    for(var h=sh;h<sh+dur;h++) blocked[h]={players:b.players||'?'};
+    for(var i=0;i<dur;i++){
+      var key=parseFloat(((sh+i)%24).toFixed(1));
+      blocked[key]={players:b.players||'?'};
+    }
   });
   var p=ds.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
   document.getElementById('slot-date-lbl').textContent=DAY_FULL[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
   var isSLDate=SL_DATES.indexOf(ds)!==-1;
   document.getElementById('shift-block-m').style.display=isSLDate?'none':'';
-  document.getElementById('slots-morning').innerHTML=buildSlotGrid([5,6,7,8],blocked,ds,'morning');
-  document.getElementById('slots-afternoon').innerHTML=buildSlotGrid([16,17,18,19,20,21,22,23],blocked,ds,'afternoon');
+  // Morning: 5:30 AM, 6:30 AM, 7:30 AM | Afternoon: 3:00 PM → 2:00 AM (crosses midnight)
+  document.getElementById('slots-morning').innerHTML=buildSlotGrid([5.5,6.5,7.5],blocked,ds,'morning');
+  document.getElementById('slots-afternoon').innerHTML=buildSlotGrid([15,16,17,18,19,20,21,22,23,0,1,2],blocked,ds,'afternoon');
   document.getElementById('slot-section').style.display='block';
   document.getElementById('book-form').style.display='none';
   selectedSlot=null;
@@ -1098,7 +1102,8 @@ function renderSlots(ds){
 
 function buildSlotGrid(hours,blocked,ds,shift){
   return hours.map(function(h){
-    var t=fmtHr(h), b=blocked[h];
+    var key=parseFloat((h%24).toFixed(1));
+    var t=fmtHr(h), b=blocked[key];
     if(b){
       var n=parseInt(b.players)||0, full=n>=4;
       var cls=full?'slot-btn slot-full':'slot-btn slot-pool';
@@ -1109,19 +1114,23 @@ function buildSlotGrid(hours,blocked,ds,shift){
   }).join('');
 }
 
+// Supports :00 and :30 times; returns decimal hours (5.5 = 5:30 AM)
 function parseHr(s){
   if(!s) return 0;
-  var m=s.match(/(\d+):00\s*(AM|PM)/i); if(!m) return 0;
-  var h=parseInt(m[1]),ap=m[2].toUpperCase();
+  var m=s.match(/(\d+):(\d+)\s*(AM|PM)/i); if(!m) return 0;
+  var h=parseInt(m[1]),min=parseInt(m[2]),ap=m[3].toUpperCase();
   if(ap==='PM'&&h!==12) h+=12;
   if(ap==='AM'&&h===12) h=0;
-  return h;
+  return h+(min===30?0.5:0);
 }
+// Supports decimal hours and post-midnight (h>=24 wraps correctly)
 function fmtHr(h){
-  if(h===0) return '12:00 AM';
-  if(h===12) return '12:00 PM';
-  if(h<12) return h+':00 AM';
-  return (h-12)+':00 PM';
+  var min=(h%1===0.5)?':30':':00';
+  var wh=Math.floor(h)%24;
+  if(wh===0) return '12'+min+' AM';
+  if(wh===12) return '12'+min+' PM';
+  if(wh<12) return wh+min+' AM';
+  return (wh-12)+min+' PM';
 }
 
 function selectSlot(ds,shift,timeStr){
@@ -1131,7 +1140,10 @@ function selectSlot(ds,shift,timeStr){
   var rateM=isSLDate?0:RATE_M, rateA=isSLDate?0:RATE_A;
   var shiftLbl=shift==='morning'?'1st Shift ('+(rateM?'₱'+rateM+'/hr':'FREE')+')':'2nd Shift ('+(rateA?'₱'+rateA+'/hr':'FREE')+')';
   document.getElementById('slot-banner-info').textContent='📅 '+DAY_SHORT[d.getDay()]+', '+MONTH_SHORT[d.getMonth()]+' '+d.getDate()+' · '+timeStr+' · '+shiftLbl;
-  var startH=parseHr(timeStr), maxHrs=shift==='morning'?(9-startH):(24-startH);
+  var startH=parseHr(timeStr);
+  // Afternoon slots past midnight (0,1,2 AM) are treated as 24,25,26 for end-time math
+  var adjStart=(shift==='afternoon'&&startH<12)?startH+24:startH;
+  var maxHrs=Math.floor(shift==='morning'?(8.5-startH):(27-adjStart));
   var maxAllowed=isSLDate?2:maxHrs;
   var durEl=document.getElementById('bk-dur');
   durEl.innerHTML='<option value="">Select…</option>';
